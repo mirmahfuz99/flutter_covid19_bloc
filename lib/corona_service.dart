@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import 'model/corona_case.dart';
 import 'model/corona_case_country.dart';
@@ -31,9 +32,8 @@ const kTimeoutDuration = Duration(seconds: 25);
 class CoronaService {
   CoronaService._privateConstructor();
   static final CoronaService instance = CoronaService._privateConstructor();
-
-  static var baseURL =
-      'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query';
+  static var covid19_baseURL = "https://corona.lmao.ninja/";
+  static var baseURL =  'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query';
 
   static String get caseURL {
     return '$baseURL?f=json&where=(Confirmed%3E%200)%20OR%20(Deaths%3E0)%20OR%20(Recovered%3E0)&returnGeometry=false&spatialRef=esriSpatialRelIntersects&outFields=*&orderByFields=Country_Region%20asc,Province_State%20asc&resultOffset=0&resultRecordCount=250&cacheHint=false';
@@ -101,6 +101,17 @@ class CoronaService {
       return json.decode(response.body);
     } else {
       throw ServerErrorException("Error retrieving data");
+    }
+  }
+
+
+  Future<Response> getCovid19Data(String param)async{
+    try{
+      final result= http.get(covid19_baseURL+"$param");
+      return result;
+    }catch(e){
+      print("Error :${e.toString()}");
+      throw Exception();
     }
   }
 }
